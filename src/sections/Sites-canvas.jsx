@@ -44,16 +44,16 @@ function TexturedPanel({ texturePath, position }) {
 
 const Particles = () => {
   const particleControls = useControls('Particles', {
-    quantity: { value: 200, min: 10, max: 5000, step: 1 },
-    minimum_size: { value: 0.2, min: 0.1, max: 10, step: 0.1 },
+    quantity: { value: 500, min: 10, max: 5000, step: 1 },
+    minimum_size: { value: 0.5, min: 0.1, max: 10, step: 0.1 },
     maximum_size: { value: 2.5, min: 0.1, max: 10, step: 0.1 },
-    min_size_bias: { value: 5, min: 0.1, max: 10, step: 0.1 },
+    min_size_bias: { value: 10, min: 0.1, max: 20, step: 0.1 },
     close_limit: { value: 0.1, min: 0.1, max: 10, step: 0.1 },
-    far_limit: { value: 30, min: 10, max: 100, step: 1 },
-    closeness_bias: { value: 2, min: 0.1, max: 15, step: 0.1 },
+    far_limit: { value: 25, min: 10, max: 100, step: 1 },
+    closeness_bias: { value: 5, min: 0.1, max: 15, step: 0.1 },
     core_opacity: { value: 0.8, min: .001, max: 1, step: 0.01 },
     mid_opacity: { value: 0.5, min: .001, max: 1, step: 0.01 },
-    fringe_opacity: { value: 0.75, min: .001, max: 1, step: 0.01 },
+    fringe_opacity: { value: 0.25, min: .001, max: 1, step: 0.01 },
     color: { value: '#ffffff' }
   });
 
