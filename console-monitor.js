@@ -3,7 +3,7 @@ import puppeteer from 'puppeteer';
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    executablePath: 'D:\\portableApps\\GoogleChromePortable\\App\\Chrome-bin\\chrome.exe',
+    executablePath: 'D:\\portableApps\\GoogleChromeCline\\App\\Chrome-bin\\chrome.exe',
     args: ['--remote-debugging-port=9222']
   });
 

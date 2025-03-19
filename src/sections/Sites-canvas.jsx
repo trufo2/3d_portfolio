@@ -101,7 +101,6 @@ const Particles = () => {
     return texture;
   }, [core_opacity, mid_opacity, fringe_opacity, color]);
 
-  // Handle particle positioning
   useEffect(() => {
     if (!particlesRef.current) return;
     
