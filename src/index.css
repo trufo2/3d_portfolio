@@ -4,20 +4,96 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  scroll-behavior: smooth;
+body {
+  margin: 0;
+  padding-bottom: 25vh;
+  background: #000000;
+  font-family: 'General Sans', sans-serif;
 }
 
-body {
-  background: black;
-  font-family: 'General Sans', sans-serif;
-  margin: 0;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
-  position: absolute;
-  width: 100%;
-  height: 100%;
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+:root {
+  --texts_top_margin: 45vh;
+  --panels_top_margin: -25vh;
+  --texts_spacing: 80vh;
+  --panels_spacing: -30vh;
+  --panels_size: 50vh;
+  --texts_right_margin: 30vw;
+}
+
+.three-element {
+  height: var(--panels_size);
+  margin-top: var(--panels_spacing);
+}
+
+.three-element-first {
+  margin-top: var(--panels_top_margin);
+}
+
+.html-text {
+  padding-left: var(--texts_right_margin);
+  margin-top: var(--texts_spacing);
+}
+
+.html-text-first {
+  margin-top: var(--texts_top_margin);
+}
+
+.html-element {
+  position: relative;
+  z-index: 1;
+}
+
+.html-title, .html-description {
+  font-family: 'Trebuchet MS', sans-serif;
+  color: rgba(32, 32, 32);
+  text-align: center;
+}
+
+.html-txtSpanTop, .html-txtSpanBtm {
+  background-color: rgba(256, 256, 256, 0.7);
+  padding: .6em 1em;
+}
+
+.html-txtSpanTop {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.html-txtSpanBtm {
+  margin-top: .55em;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.html-title {
+  font-size: 1.5rem;
+}
+
+.html-description {
+  font-size: 1.2rem;
+}
+
+.LevaButton {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: rgba(128, 128, 128, 0.5);
+  color: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 @layer utilities {
@@ -38,14 +114,13 @@ body {
   }
 
   .nav-sidebar {
-    @apply absolute left-0 right-0 bg-black-200 backdrop-blur-sm transition-all duration-300 ease-in-out overflow-hidden z-20 mx-auto sm:hidden block;
+    @apply absolute left-0 right-0 bg-black-200 backdrop-blur-sm transition-all duration-300 ease-in-out overflow-hidden z-10 mx-auto sm:hidden block;
   }
 
   .text-gray_gradient {
     @apply bg-gradient-to-r from-[#BEC1CF] from-60% via-[#D5D8EA] via-60% to-[#D5D8EA] to-100% bg-clip-text text-transparent;
   }
 
-  /* hero section */
   .hero_tag {
     @apply text-center xl:text-6xl md:text-5xl sm:text-4xl text-3xl font-generalsans font-black !leading-normal;
   }

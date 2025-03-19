@@ -20,9 +20,3 @@ export const navLinks = [
         href: '/art',
     },
 ];
-export const calculateSizes = (isSmall, isMobile, isTablet) => {
-    return {
-        deskScale: isSmall ? 0.05 : isMobile ? 0.06 : 0.065,
-        deskPosition: isMobile ? [0, 0, 0] : [0, 0, 0],
-    };
-};

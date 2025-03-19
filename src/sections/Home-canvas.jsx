@@ -1,21 +1,20 @@
 import React from 'react';
 import { Suspense, useEffect } from 'react';
-import { Canvas } from '@react-three/fiber';
-import { OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei';
-import { useMediaQuery } from 'react-responsive';
-import { calculateSizes } from '../constants/index';
+import { UseCanvas } from '@14islands/r3f-scroll-rig';
+import { useGLTF, OrbitControls, PerspectiveCamera } from '@react-three/drei';
 import CanvasLoader from '../components/CanvasLoader';
 import { 
   SpotLightWithHelper, 
   PointLightWithHelper, 
-  LevaControlsToggle, 
   BlackFog, 
-  HelpersVisibilityProvider 
+  LevaControlsToggle, 
+  HelpersVisibilityProvider,
+  useHelpersVisibility
 } from '../components/LightsNhelpers';
+import { Leva } from 'leva';
 
 const Model = () => {
   const { scene } = useGLTF('models/deskNpc.glb');
-  
   useEffect(() => {
     const castShadowElements = ['chair', 'desk', 'keyb', 'lamp', 'mouse', 'pc', 'screen'];
     const receiveShadowElements = ['floor', 'desk', 'chair'];
@@ -30,42 +29,30 @@ const Model = () => {
       }
     });
   }, [scene]);
-  const isSmall = useMediaQuery({maxWidth: 440});
-  const isMobile = useMediaQuery({maxWidth: 768});
-  const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
-  const sizes = calculateSizes(isSmall, isMobile, isTablet);
   return (
-    <group
-      position={sizes.deskPosition}
-      rotation={[0, 0, 0]}
-      scale={sizes.deskScale}
-    >
+    <group scale={.065}>
       <primitive object={scene} />
     </group>
   );
 };
+
 const HomeCanvas = () => {
-  const isSmall = useMediaQuery({maxWidth: 440});
-  const isMobile = useMediaQuery({maxWidth: 768});
-  const isTablet = useMediaQuery({ minWidth: 768, maxWidth: 1024 });
-  const sizes = calculateSizes(isSmall, isMobile, isTablet);
+  const { helpersVisible } = useHelpersVisibility();
   return (
-    <div className="w-full h-full absolute inset-0 z-0" style={{ pointerEvents: 'auto' }}>
+    <UseCanvas>
       <HelpersVisibilityProvider>
         <LevaControlsToggle />
-        <Canvas className="w-screen h-screen shadows" style={{ touchAction: 'none' }} shadows>
           <Suspense fallback={<CanvasLoader />}>
             <PerspectiveCamera makeDefault position={[-5, 10, 15]} />
-            <OrbitControls />
-            <ambientLight intensity={0.05} color="#b9d5ff" />
+            <OrbitControls enableDamping dampingFactor={0.05} />
+            <ambientLight intensity={0.05} color="#ffffff" />
             <SpotLightWithHelper />
             <PointLightWithHelper />
             <BlackFog />
-            {sizes ? <Model /> : null}
+            <Model />
           </Suspense>
-        </Canvas>
       </HelpersVisibilityProvider>
-    </div>
+    </UseCanvas>
   );
 };
 

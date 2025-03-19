@@ -1,225 +1,217 @@
-import React, { useRef, useEffect, useState } from 'react';
-import { Canvas, useFrame, useThree } from '@react-three/fiber';
-import { PerspectiveCamera, useTexture } from '@react-three/drei';
-import { useMediaQuery } from 'react-responsive';
-import * as THREE from 'three';
-import gsap from 'gsap';
+import { useRef, useEffect, useMemo, useState } from "react";
+import { createPortal } from 'react-dom';
+import { useLoader, useThree, useFrame } from "@react-three/fiber";
+import { Float } from "@react-three/drei";
+import * as THREE from "three";
+import { ScrollScene, UseCanvas } from "@14islands/r3f-scroll-rig";
+import { useControls, Leva } from "leva";
 
-// Texture paths
-const TEXTURE_PATHS = [
-  'assets/textures/fontbetou_com.jpg',
-  'assets/textures/mussoft_ch.jpg',
-  'assets/textures/swissart-consulting_ch.jpg',
-  'assets/textures/longines_st.jpg',
-  'assets/textures/threejsDynamicLights.png',
-];
+const levaTheme = {
+  sizes: {
+    rootWidth: '310px',
+    controlWidth: '150px',
+    folderHeight: '20px',
+    inputHeight: '20px'
+  },
+  space: {
+    sm: '2px',
+    md: '4px'
+  }
+};
 
-// URLs for the websites when planes are clicked
-const WEBSITE_URLS = [
-  'https://fontbetou.com/',
-  'https://mussoft.ch/',
-  'https://swissart-consulting.ch',
-  'https://mussoft.ch/test/st/',
-  'https://reportages.ch/three/bsLights14/',
-];
+function DirLight(){
+  const directionalLight=new THREE.DirectionalLight();
+  directionalLight.intensity=1.0;
+  useFrame(()=>{
+    const width=window.innerWidth;
+    const height=window.innerHeight;
+    directionalLight.position.set(0,100,500);
+  })
+  return (<>
+    <primitive object={directionalLight} />
+  </>);
+}
 
-// Plane component that represents a single website
-const Plane = ({ index, position, rotation, texture, onClick }) => {
-  const meshRef = useRef();
-  const [hovered, setHovered] = useState(false);
-  
-  useEffect(() => {
-    if (meshRef.current) {
-      // Initial rotation animation
-      const direction = index % 2 === 0 ? 1 : -1;
-      gsap.to(meshRef.current.rotation, {
-        duration: 6,
-        x: direction * Math.PI / 30,
-        y: direction * Math.PI / 40,
-        z: direction * Math.PI / 50,
-        ease: 'power1.inOut',
-        yoyo: true,
-        repeat: -1
-      });
-    }
-  }, [index]);
-
-  useFrame((state, delta) => {
-    if (meshRef.current) {
-      // Subtle continuous rotation
-      meshRef.current.rotation.x += delta * 0.1;
-      meshRef.current.rotation.y += delta * 0.12;
-    }
-  });
-
+function TexturedPanel({ texturePath, position }) {
+  const texture = useLoader(THREE.TextureLoader, texturePath);
   return (
-    <mesh
-      ref={meshRef}
-      position={position}
-      rotation={rotation}
-      onClick={onClick}
-      onPointerOver={() => setHovered(true)}
-      onPointerOut={() => setHovered(false)}
-      scale={hovered ? [1.05, 1.05, 1.05] : [1, 1, 1]}
-    >
-      <boxGeometry args={[1, 0.75, 0.01]} />
+    <mesh position={position}>
+      <boxGeometry args={[6.4, 4.8, 0.1]} />
       <meshStandardMaterial map={texture} />
     </mesh>
   );
-};
+}
 
-// Particles component for background effect
 const Particles = () => {
-  const particlesCount = 1000;
+  const particleControls = useControls('Particles', {
+    quantity: { value: 200, min: 10, max: 5000, step: 1 },
+    minimum_size: { value: 0.2, min: 0.1, max: 10, step: 0.1 },
+    maximum_size: { value: 2.5, min: 0.1, max: 10, step: 0.1 },
+    min_size_bias: { value: 5, min: 0.1, max: 10, step: 0.1 },
+    close_limit: { value: 0.1, min: 0.1, max: 10, step: 0.1 },
+    far_limit: { value: 30, min: 10, max: 100, step: 1 },
+    closeness_bias: { value: 2, min: 0.1, max: 15, step: 0.1 },
+    core_opacity: { value: 0.8, min: .001, max: 1, step: 0.01 },
+    mid_opacity: { value: 0.5, min: .001, max: 1, step: 0.01 },
+    fringe_opacity: { value: 0.75, min: .001, max: 1, step: 0.01 },
+    color: { value: '#ffffff' }
+  });
+
+  const {
+    quantity,
+    minimum_size, 
+    maximum_size, 
+    close_limit, 
+    far_limit,
+    closeness_bias,
+    min_size_bias,
+    core_opacity,
+    mid_opacity,
+    fringe_opacity,
+    color
+  } = particleControls;
   const particlesRef = useRef();
-  const { viewport } = useThree();
-  
+  const { camera } = useThree();
+
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const texture = useMemo(() => {
+    const canvas = document.createElement('canvas');
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    const gradient = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
+    const rgbaColor = (opacity) => {
+      const hex = color.replace('#', '');
+      const r = parseInt(hex.substring(0, 2), 16);
+      const g = parseInt(hex.substring(2, 4), 16);
+      const b = parseInt(hex.substring(4, 6), 16);
+      return `rgba(${r}, ${g}, ${b}, ${opacity || 1})`;
+    };
+    gradient.addColorStop(0, rgbaColor(1));
+    gradient.addColorStop(.5, rgbaColor(core_opacity || 1));
+    gradient.addColorStop(.65, rgbaColor(mid_opacity || .8));
+    gradient.addColorStop(.8, rgbaColor(fringe_opacity || .9));
+    gradient.addColorStop(1, rgbaColor(.001));
+    ctx.fillStyle = gradient;
+    ctx.beginPath();
+    ctx.arc(32, 32, 32, 0, Math.PI * 2);
+    ctx.fill();
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+    return texture;
+  }, [core_opacity, mid_opacity, fringe_opacity, color]);
+
+  // Handle particle positioning
   useEffect(() => {
-    if (particlesRef.current) {
-      const positions = particlesRef.current.geometry.attributes.position;
-      const sizes = new Float32Array(particlesCount);
+    if (!particlesRef.current) return;
+    
+    for (let i = 0; i < quantity; i++) {
+      const randomValue = Math.pow(Math.random(), closeness_bias);
+      const z = close_limit + randomValue * (far_limit - close_limit);
+      const sizeRandom = Math.pow(Math.random(), min_size_bias);
+      const size = THREE.MathUtils.lerp(minimum_size, maximum_size, sizeRandom);
       
-      for (let i = 0; i < particlesCount; i++) {
-        positions.setXYZ(
-          i,
-          (Math.random() - 0.5) * 10 * viewport.width,
-          (Math.random() - 0.5) * 10 * viewport.height,
-          (Math.random() - 0.5) * 10
-        );
-        sizes[i] = Math.random() * 0.5 + 0.1;
-      }
-      
-      particlesRef.current.geometry.setAttribute(
-        'size', 
-        new THREE.BufferAttribute(sizes, 1)
+      dummy.position.set(
+        (Math.random() - 0.5) * far_limit,
+        (Math.random() - 0.5) * far_limit,
+        -z
       );
+      dummy.scale.set(size, size, size);
+      dummy.updateMatrix();
+      particlesRef.current.setMatrixAt(i, dummy.matrix);
     }
-  }, [viewport]);
-  
+    
+    particlesRef.current.instanceMatrix.needsUpdate = true;
+  }, [quantity, close_limit, far_limit, closeness_bias, min_size_bias, minimum_size, maximum_size]);
+
+  useEffect(() => {
+    if (particlesRef.current?.material) {
+      particlesRef.current.material.opacity = core_opacity;
+    }
+  }, [core_opacity]);
+
+  useFrame(() => {
+    if (particlesRef.current) {
+      particlesRef.current.quaternion.copy(camera.quaternion);
+    }
+  });
+
   return (
-    <points ref={particlesRef}>
-      <bufferGeometry>
-        <bufferAttribute
-          attach="attributes-position"
-          count={particlesCount}
-          array={new Float32Array(particlesCount * 3)}
-          itemSize={3}
-        />
-      </bufferGeometry>
-      <pointsMaterial
-        size={0.1}
-        color="#ffffff"
-        sizeAttenuation={true}
+    <instancedMesh ref={particlesRef} args={[null, null, quantity]}>
+      <planeGeometry args={[.1, .1]} />
+      <meshBasicMaterial
+        map={texture}
         transparent={true}
-        opacity={0.8}
+        opacity={core_opacity}
         blending={THREE.AdditiveBlending}
         depthWrite={false}
       />
-    </points>
+    </instancedMesh>
   );
 };
 
-// Main scene component
-const SitesScene = () => {
-  const planesGroupRef = useRef();
-  const cameraGroupRef = useRef();
-  const [scrollY, setScrollY] = useState(0);
-  const [cursor, setCursor] = useState({ x: 0, y: 0 });
-  const { viewport } = useThree();
-  const isMobile = useMediaQuery({ maxWidth: 768 });
+export default function ScrolRigThreeComponent({ texturePath, isFirst, isLast }) {
+  const scene = useRef(null);
   
-  // Load textures
-  const textures = useTexture(TEXTURE_PATHS);
-  
-  // Calculate scroll factor based on document height
-  const planesScrollFactor = 0.0001;
-  const objectsDistance = 2;
-  
-  useEffect(() => {
-    const handleScroll = () => {
-      setScrollY(window.scrollY);
-    };
-    
-    const handleMouseMove = (event) => {
-      setCursor({
-        x: event.clientX / window.innerWidth - 0.5,
-        y: event.clientY / window.innerHeight - 0.5
-      });
-    };
-    
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('mousemove', handleMouseMove);
-    
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('mousemove', handleMouseMove);
-    };
-  }, []);
-  
-  // Update planes position based on scroll
-  useEffect(() => {
-    if (planesGroupRef.current) {
-      planesGroupRef.current.position.y = scrollY * planesScrollFactor;
-    }
-  }, [scrollY, planesScrollFactor]);
-  
-  // Handle plane click
-  const handlePlaneClick = (index) => {
-    window.open(WEBSITE_URLS[index], '_blank');
-  };
-  
-  // Camera parallax effect
-  useFrame((state, delta) => {
-    if (cameraGroupRef.current) {
-      cameraGroupRef.current.position.x += (cursor.x * 0.5 - cameraGroupRef.current.position.x) * 5 * delta;
-      cameraGroupRef.current.position.y += (cursor.y * 0.5 - cameraGroupRef.current.position.y) * 5 * delta;
-    }
+  const layoutControls = useControls('Layout', {
+    texts_top_margin: { value: 45, min: 25, max: 65, step: .1 },
+    panels_top_margin: { value: -25, min: -50, max: 0, step: .1 },
+    texts_spacing: { value: 80, min: 40, max: 120, step: .1 },
+    panels_spacing: { value: -30, min: -70, max: 10, step: .1 },
+    panels_size: { value: 50, min: 30, max: 70, step: 1 },
+    texts_right_margin: { value: 30, min: 0, max: 60, step: 1 }
   });
   
-  return (
-    <>
-      <group ref={cameraGroupRef}>
-        <PerspectiveCamera makeDefault position={[0, 0, 5]} fov={75} />
-      </group>
-      
-      <ambientLight intensity={0.5} />
-      <spotLight position={[0, 5, 10]} angle={0.15} penumbra={1} intensity={1} castShadow />
-      
-      <Particles />
-      
-      <group ref={planesGroupRef}>
-        {textures.map((texture, index) => {
-          const xPos = index % 2 === 0 ? -1.5 : 1.5;
-          const yPos = -objectsDistance * index;
-          
-          return (
-            <Plane
-              key={index}
-              index={index}
-              position={[xPos, yPos, 0]}
-              rotation={[0, 0, 0]}
-              texture={texture}
-              onClick={() => handlePlaneClick(index)}
-            />
-          );
-        })}
-      </group>
-    </>
-  );
-};
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--texts_top_margin', `${layoutControls.texts_top_margin}vh`);
+    root.style.setProperty('--panels_top_margin', `${layoutControls.panels_top_margin}vh`);
+    root.style.setProperty('--texts_spacing', `${layoutControls.texts_spacing}vh`);
+    root.style.setProperty('--panels_spacing', `${layoutControls.panels_spacing}vh`);
+    root.style.setProperty('--panels_size', `${layoutControls.panels_size}vh`);
+    root.style.setProperty('--texts_right_margin', `${layoutControls.texts_right_margin}vw`);
+  }, [
+    layoutControls.texts_top_margin,
+    layoutControls.panels_top_margin,
+    layoutControls.texts_spacing,
+    layoutControls.panels_spacing,
+    layoutControls.panels_size,
+    layoutControls.texts_right_margin,
+    layoutControls.panels_size
+  ]);
 
-// Main component
-const SitesCanvas = () => {
-  return (
-    <div className="w-full h-full absolute inset-0 z-0" style={{ pointerEvents: 'auto' }}>
-      <Canvas className="w-screen h-screen" style={{ touchAction: 'none', pointerEvents: 'auto' }} shadows>
-        <SitesScene />
-      </Canvas>
-      
-      {/* This creates extra scroll space for the scroll effect */}
-      <div style={{ height: '300vh' }} />
-    </div>
-  );
-};
+  const [showPanel, setShowPanel] = useState(false);
 
-export default SitesCanvas;
+  return (
+    <article ref={scene}>
+      <button 
+        className="LevaButton"
+        onClick={() => setShowPanel(prev => !prev)}
+      >
+        c
+      </button>
+      <UseCanvas>
+        <ScrollScene track={scene}>
+          {({...props}) => (
+            <group scale={props.scale.xy.min() * 0.25}>  
+              <ambientLight intensity={0.6} />
+              <DirLight />
+              <Particles />
+              <Float position={[-0.75, 0, 0]}>
+                <TexturedPanel 
+                  texturePath={texturePath}
+                  position={[-0.75, 0, 0]}
+                />
+              </Float>
+            </group>
+          )}
+        </ScrollScene>
+      </UseCanvas>
+      <div className={`three-element ${isFirst ? 'three-element-first' : ''}`}></div>
+      {createPortal(
+        <Leva hidden={!showPanel} theme={levaTheme} />,
+        document.body
+      )}
+    </article>
+  );
+}

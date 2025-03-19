@@ -5,9 +5,7 @@ import HomeCanvas from './Home-canvas';
 const HomeLayout = ({ children }) => {
   return (
     <>
-      <div className="w-full h-full absolute inset-0 z-10">
-        <HomeCanvas />
-      </div>
+      <HomeCanvas />
       <div className="relative z-50">
         <Navbar />
       </div>

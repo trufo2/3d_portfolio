@@ -7,5 +7,8 @@ export default defineConfig({
     outDir: 'docs',
     emptyOutDir: true,
   },
-  base: '/3d_portfolio/'
+  base: '/3d_portfolio/',
+  server: {
+    port: 3025,
+  },
 })

@@ -3,6 +3,7 @@
   "private": false,
   "version": "0.0.0",
   "type": "module",
+  "homepage": "trufo2.github.io/3d_portfolio/",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,11 +11,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@14islands/r3f-scroll-rig": "^8.15.0",
     "@gsap/react": "^2.1.2",
-    "@react-three/drei": "^10.0.0",
+    "@react-three/drei": "^10.0.4",
     "@react-three/fiber": "^9.0.4",
     "gsap": "^3.12.7",
     "leva": "^0.10.0",
+    "puppeteer": "^24.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-responsive": "^10.0.0",
