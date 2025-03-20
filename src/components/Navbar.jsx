@@ -6,8 +6,8 @@ const NavItems = () => {
     return (
         <ul className="nav-ul">
             {navLinks.map(({ id, href, name }) => (
-				<li key={id} className="nav-li">
-					<Link to={href} className="nav-li_a">
+				<li key={id} className={`nav-li ${window.matchMedia('(pointer: coarse)').matches ? 'h-[1.5rem]' : ''}`}>
+					<Link to={href} className="nav-li_a h-full flex items-center">
 						{name}
 					</Link>
 				</li>
@@ -17,10 +17,34 @@ const NavItems = () => {
 }
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
+    const [hasMargin, setHasMargin] = useState(false);
+    const isMobile = window.matchMedia('(pointer: coarse)').matches;
+    
     const toggleMenu = () => {
-        setIsOpen((prevIsOpen) => !prevIsOpen);
-		document.body.classList.toggle("menu-active");
+        const newIsOpen = !isOpen;
+        setIsOpen(newIsOpen);
+        
+        // Only add margin if menu is opening and margin isn't already set
+        if (newIsOpen && !hasMargin) {
+            document.body.classList.add("menu-active");
+            setHasMargin(true);
+        }
+        // Only remove margin if menu is closing and margin is set
+        else if (!newIsOpen && hasMargin) {
+            document.body.classList.remove("menu-active");
+            setHasMargin(false);
+        }
     };
+
+    // Reset margin state when navigating away
+    useEffect(() => {
+        return () => {
+            if (hasMargin) {
+                document.body.classList.remove("menu-active");
+                setHasMargin(false);
+            }
+        };
+    }, [hasMargin]);
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth >= 640 && isOpen) {
@@ -34,18 +58,18 @@ const Navbar = () => {
         };
     }, [isOpen]);
     return (
-		<header className='fixed top-0 left-0 right-0 z-[100] bg-black/90'>
-			<div className='max-w-7xl mx-auto'>
-				<div className='flex justify-between items-center py-5 mx-auto c-space'>
+		<header className={`fixed top-0 left-0 right-0 z-[100] bg-black/50 ${window.matchMedia('(pointer: coarse)').matches ? 'h-[3rem]' : ''}`}>
+			<div className='max-w-7xl mx-auto h-full'>
+				<div className="flex justify-between items-center py-2 mx-auto c-space h-full">
 					<Link
 						to="/"
-						className="text-neutral-400 font-bold text-xl hover:text-white transition-colors"
+						className="text-white text-xl hover:text-white transition-colors"
 					>
 						Michael Musson
 					</Link>
 					<button
 						onClick={toggleMenu}
-						className='text-neutral-400 hover:text-white focus-outline-none sm:hidden flex'
+						className='text-white hover:text-white focus-outline-none sm:hidden flex'
 						aria-label='Toggle menu'>
 						<img
 							src={isOpen ? "assets/close.svg" : "assets/menu.svg"}
@@ -60,10 +84,8 @@ const Navbar = () => {
 				</div>
 			</div>
 			<div
-				className={`nav-sidebar ${
-					isOpen ? "max-h-screen" : "max-h-0"
-				}`}>
-				<nav className="p-5">
+				className={`nav-sidebar ${isOpen ? "max-h-screen" : "max-h-0"}`}>
+				<nav className="p-0">
 					<NavItems />
 				</nav>
 			</div>

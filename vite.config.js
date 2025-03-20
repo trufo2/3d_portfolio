@@ -9,6 +9,7 @@ export default defineConfig({
   },
   base: '/3d_portfolio/',
   server: {
+    host: '0.0.0.0',
     port: 3025,
   },
 })

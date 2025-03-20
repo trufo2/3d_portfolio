@@ -34,6 +34,7 @@ function FovUpdateByFovx({ fovx }){
 
 function App() {
   const [fov, setFov] = useState(20)
+  const [isHome, setIsHome] = useState(false)
   
   return (
     <>
@@ -42,12 +43,24 @@ function App() {
           <FovUpdateByFovx fovx={20}/>
           <SoftShadows focus={0.25} />
         </GlobalCanvas>
-        <SmoothScrollbar config={{
+        <SmoothScrollbar 
+          locked={isHome}
+          config={{
             duration: 0.25,
-        }} />
+          }} 
+        />
         <HashRouter>
           <Routes>
-            <Route path="/" element={<HomeLayout><Home /></HomeLayout>} />
+            <Route 
+              path="/" 
+              element={
+                <HomeLayout>
+                  <Home />
+                </HomeLayout>
+              } 
+              onEnter={() => setIsHome(true)}
+              onExit={() => setIsHome(false)}
+            />
             <Route path="/sites" element={<SitesLayout><Sites /></SitesLayout>} />
             <Route path="/animations" element={<HomeLayout><Animations /></HomeLayout>} />
             <Route path="/videos" element={<HomeLayout><Videos /></HomeLayout>} />

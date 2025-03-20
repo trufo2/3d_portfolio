@@ -38,6 +38,7 @@ const Model = () => {
 
 const HomeCanvas = () => {
   const { helpersVisible } = useHelpersVisibility();
+  const isMobile = window.matchMedia('(pointer: coarse)').matches || window.innerWidth < 768;
   return (
     <UseCanvas>
       <HelpersVisibilityProvider>
@@ -45,7 +46,7 @@ const HomeCanvas = () => {
           <Suspense fallback={<CanvasLoader />}>
             <PerspectiveCamera makeDefault position={[-5, 10, 15]} />
             <OrbitControls enableDamping dampingFactor={0.05} />
-            <ambientLight intensity={0.05} color="#ffffff" />
+            <ambientLight intensity={isMobile ? 0.2 : 0.05} color="#ffffff" />
             <SpotLightWithHelper />
             <PointLightWithHelper />
             <BlackFog />

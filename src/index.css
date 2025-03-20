@@ -6,6 +6,107 @@
 
 body {
   margin: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: #000000;
+  font-family: 'General Sans', sans-serif;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+:root {
+  --texts_top_margin: 45vh;
+  --panels_top_margin: -25vh;
+  --texts_spacing: 80vh;
+  --panels_spacing: -30vh;
+  --panels_size: 50vh;
+  --texts_right_margin: 30vw;
+}
+
+.three-element {
+  height: var(--panels_size);
+  margin-top: var(--panels_spacing);
+}
+
+.three-element-first {
+  margin-top: var(--panels_top_margin);
+}
+
+.html-text {
+  padding-left: var(--texts_right_margin);
+  margin-top: var(--texts_spacing);
+}
+
+.html-text-first {
+  margin-top: var(--texts_top_margin);
+}
+
+.html-element {
+  position: relative;
+  z-index: 1;
+}
+
+.html-title, .html-description {
+  font-family: 'Trebuchet MS', sans-serif;
+  color: rgba(32, 32, 32);
+  text-align: center;
+}
+
+.html-txtSpanTop, .html-txtSpanBtm {
+  background-color: rgba(256, 256, 256, 0.7);
+  padding: .6em 1em;
+}
+
+.html-txtSpanTop {
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.html-txtSpanBtm {
+  margin-top: .55em;
+  border-radius: 10px;
+  display: inline-block;
+}
+
+.html-title {
+  font-size: 1.5rem;
+}
+
+.html-description {
+  font-size: 1.2rem;
+}
+
+.LevaButton {
+  position: fixed;
+  bottom: 10px;
+  left: 10px;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
+  background-color: rgba(128, 128, 128, 0.5);
+  color: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@layer utilities {
+}
+@import url('https://fonts.cdnfonts.com/css/general-sans');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  margin: 0;
   padding-bottom: 25vh;
   background: #000000;
   font-family: 'General Sans', sans-serif;
@@ -97,24 +198,54 @@ a {
 }
 
 @layer utilities {
+
   .c-space {
     @apply sm:px-10 px-5;
   }
 
   .nav-ul {
-    @apply flex flex-col items-center gap-4 sm:flex-row md:gap-6 relative z-20;
+    @apply flex flex-col items-center sm:flex-row relative z-20 pb-4 pt-[0.8em] px-5 bg-black/50;
   }
+
+  @media (min-width: 640px) {
+    .nav-ul {
+      @apply bg-black/0 pr-0;
+    }
+    .nav-li {
+      @apply pt-[1em] pl-[1em] pr-0;
+    }
+    .nav-li:first-child {
+      @apply pl-0;
+    }
+  }
+
+  @media (max-width: 639px) {
+    .nav-ul {
+      @apply bg-black/50;
+    }
+  }
+
+    .nav-li_a {
+      @apply text-lg md:text-base text-white hover:text-white transition-colors font-normal;
+    }
 
   .nav-li {
-    @apply text-neutral-400 hover:text-white font-generalsans max-sm:hover:bg-black-500 max-sm:w-full max-sm:rounded-md py-2 max-sm:px-5;
+    @apply text-neutral-400 font-generalsans py-0;
   }
 
-  .nav-li_a {
-    @apply text-lg md:text-base hover:text-white transition-colors;
+
+  @media (max-width: 639px) {
+    .nav-li_a {
+      @apply w-full h-[150%] block flex items-center justify-center hover:rounded-md;
+    }
+    
+    .nav-li {
+      @apply w-full rounded-md block h-full px-0 hover:bg-gray-500;
+    }
   }
 
   .nav-sidebar {
-    @apply absolute left-0 right-0 bg-black-200 backdrop-blur-sm transition-all duration-300 ease-in-out overflow-hidden z-10 mx-auto sm:hidden block;
+    @apply absolute left-0 right-0 bg-black/10 transition-all duration-300 ease-in-out overflow-hidden z-10 mx-auto sm:hidden block;
   }
 
   .text-gray_gradient {
@@ -171,7 +302,7 @@ a {
 
 @media (max-width: 639px) {
   body.menu-active .hero-section-a {
-    margin-top: 300px;
+    margin-top: 150px;
   }
   .hero-section-a.hero-section-a {
     margin-top: 0;
@@ -194,14 +325,6 @@ a {
   text-align: center;
 }
 
-@media (min-width: 640px) {
-  .hero-section-b {
-    margin-top: 9rem;
-  }
-  .hero-section-c {
-    margin-top: 1.875rem;
-  }
-}
 
 .hero-section-d {
   text-align: center;

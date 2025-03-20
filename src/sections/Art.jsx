@@ -2,8 +2,7 @@ const Art = () => {
   return (
     <section id="art" className="hero-section hero-section-a">
       <div className="hero-section-b">
-        <p className="hero-section-c">Art</p>
-        <p className="hero_tag hero-section-d">section"art"</p>
+        <img src="assets/textures/lumbergh01.jpg" alt="Hey dewd, whaaat's Hapnin' ?" style={{width:80+'%',marginLeft:10+'%'}} />
       </div>
     </section>
   );

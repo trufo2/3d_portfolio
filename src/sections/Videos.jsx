@@ -2,8 +2,7 @@ const Videos = () => {
   return (
     <section id="videos" className="hero-section hero-section-a">
       <div className="hero-section-b">
-        <p className="hero-section-c">Vidéos</p>
-        <p className="hero_tag hero-section-d">section "vidéos"</p>
+      <img src="assets/textures/lumbergh02.jpg" alt="Hey did you get that memo?" style={{width:80+'%',marginLeft:10+'%'}} />
       </div>
     </section>
   );
