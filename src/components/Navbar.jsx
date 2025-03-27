@@ -17,34 +17,11 @@ const NavItems = () => {
 }
 const Navbar = () => {
     const [isOpen, setIsOpen] = useState(false);
-    const [hasMargin, setHasMargin] = useState(false);
     const isMobile = window.matchMedia('(pointer: coarse)').matches;
-    
     const toggleMenu = () => {
-        const newIsOpen = !isOpen;
-        setIsOpen(newIsOpen);
-        
-        // Only add margin if menu is opening and margin isn't already set
-        if (newIsOpen && !hasMargin) {
-            document.body.classList.add("menu-active");
-            setHasMargin(true);
-        }
-        // Only remove margin if menu is closing and margin is set
-        else if (!newIsOpen && hasMargin) {
-            document.body.classList.remove("menu-active");
-            setHasMargin(false);
-        }
+        setIsOpen((prevIsOpen) => !prevIsOpen);
+		document.body.classList.toggle("menu-active");
     };
-
-    // Reset margin state when navigating away
-    useEffect(() => {
-        return () => {
-            if (hasMargin) {
-                document.body.classList.remove("menu-active");
-                setHasMargin(false);
-            }
-        };
-    }, [hasMargin]);
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth >= 640 && isOpen) {

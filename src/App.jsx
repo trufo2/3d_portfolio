@@ -1,9 +1,9 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useState, useEffect } from 'react'
 import { useFrame } from '@react-three/fiber'
 import { SoftShadows } from '@react-three/drei'
 import * as THREE from "three"
 import { GlobalCanvas, SmoothScrollbar, useCanvasStore } from '@14islands/r3f-scroll-rig'
-import { HashRouter, Route, Routes } from "react-router-dom"
+import { HashRouter, Route, Routes, useLocation } from "react-router-dom"
 import HomeLayout from "./sections/Home-layout"
 import SitesLayout from "./sections/Sites-layout"
 import Home from "./sections/Home-html"
@@ -32,9 +32,37 @@ function FovUpdateByFovx({ fovx }){
   return null
 }
 
+function ScrollController() {
+  const location = useLocation()
+  
+  useEffect(() => {
+    if (location.pathname === '/') {
+      window.scrollTo(0, 0)
+      document.documentElement.style.overflow = 'hidden'
+    } else {
+      // Ensure scrollbar is visible and functional
+      document.documentElement.style.overflow = 'auto'
+      document.documentElement.style.pointerEvents = 'auto'
+    }
+    return () => {
+      window.scrollTo(0, 0)
+    }
+  }, [location.pathname])
+
+  return (
+    <SmoothScrollbar 
+      key={location.pathname}
+      locked={location.pathname === '/'}
+      config={{ 
+        duration: 0.25,
+        disablePointerOnScroll: location.pathname === '/'
+      }} 
+    />
+  )
+}
+
 function App() {
   const [fov, setFov] = useState(20)
-  const [isHome, setIsHome] = useState(false)
   
   return (
     <>
@@ -43,29 +71,15 @@ function App() {
           <FovUpdateByFovx fovx={20}/>
           <SoftShadows focus={0.25} />
         </GlobalCanvas>
-        <SmoothScrollbar 
-          locked={isHome}
-          config={{
-            duration: 0.25,
-          }} 
-        />
         <HashRouter>
           <Routes>
-            <Route 
-              path="/" 
-              element={
-                <HomeLayout>
-                  <Home />
-                </HomeLayout>
-              } 
-              onEnter={() => setIsHome(true)}
-              onExit={() => setIsHome(false)}
-            />
+            <Route path="/" element={<HomeLayout><Home /></HomeLayout>} />
             <Route path="/sites" element={<SitesLayout><Sites /></SitesLayout>} />
             <Route path="/animations" element={<HomeLayout><Animations /></HomeLayout>} />
             <Route path="/videos" element={<HomeLayout><Videos /></HomeLayout>} />
             <Route path="/art" element={<HomeLayout><Art /></HomeLayout>} />
           </Routes>
+          <ScrollController />
         </HashRouter>
       </FovContext.Provider>
     </>

@@ -4,10 +4,13 @@
 @tailwind components;
 @tailwind utilities;
 
+.no-scrollbar {
+  overflow: hidden;
+}
+
 body {
   margin: 0;
-  height: 100vh;
-  overflow: hidden;
+  padding-bottom: 25vh;
   background: #000000;
   font-family: 'General Sans', sans-serif;
 }
@@ -98,6 +101,13 @@ a {
 }
 
 @layer utilities {
+  .c-space {
+    @apply sm:px-10 px-5;
+  }
+
+  .nav-ul {
+    @apply flex flex-col items-center sm:flex-row relative z-20 pb-4 px-8 bg-black/50;
+  }
 }
 @import url('https://fonts.cdnfonts.com/css/general-sans');
 
@@ -198,14 +208,13 @@ a {
 }
 
 @layer utilities {
-
   .c-space {
     @apply sm:px-10 px-5;
   }
 
-  .nav-ul {
-    @apply flex flex-col items-center sm:flex-row relative z-20 pb-4 pt-[0.8em] px-5 bg-black/50;
-  }
+    .nav-ul {
+      @apply flex flex-col items-center sm:flex-row relative z-20 pb-4 pt-[0.8em] px-5;
+    }
 
   @media (min-width: 640px) {
     .nav-ul {
